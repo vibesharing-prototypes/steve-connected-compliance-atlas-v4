@@ -65,7 +65,7 @@ export default function ReportsPage() {
             </OverflowBreadcrumbs>
           }
           buttonArray={
-            <Button variant="contained" onClick={() => navigate('/reports/q1-2026')}>
+            <Button variant="contained" onClick={() => navigate('/reports/q1-2026')} sx={{ width: 'fit-content' }}>
               Create report
             </Button>
           }
