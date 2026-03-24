@@ -277,14 +277,16 @@ const ACTIONS = [
 function Flag({ children }: { children: React.ReactNode }) {
   return (
     <Box sx={{ borderLeft: '3px solid', borderColor: 'warning.main', pl: 2, py: 1, bgcolor: 'rgba(245, 166, 35, 0.06)', borderRadius: '0 4px 4px 0' }}>
-      {children}
+      <Box sx={{ maxWidth: '60ch' }}>
+        {children}
+      </Box>
     </Box>
   );
 }
 
 function ReportBody() {
   return (
-    <Stack gap={3}>
+    <Stack gap={3} sx={{ '& > p': { maxWidth: '60ch' } }}>
 
       <Box component="nav" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
         {[
