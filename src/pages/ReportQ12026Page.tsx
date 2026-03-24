@@ -81,7 +81,7 @@ function ReportContent() {
     >
       <Stack gap={2} sx={{ flex: 1, minHeight: 0 }}>
         <PageHeader
-          pageTitle="Q1 2026 — Connected Compliance Report"
+          pageTitle="Quarterly E&C Compliance Report - Q1 2026"
           breadcrumbs={
             <OverflowBreadcrumbs
               leadingElement={<NavLink to="/connected-compliance">Connected Compliance</NavLink>}

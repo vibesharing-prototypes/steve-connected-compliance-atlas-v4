@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router';
 
 const REPORTS = [
   {
-    title: 'Q1 2026 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q1 2026',
     scope: 'Speak Up · Policy Manager · Training',
     date: '19 March 2026',
     status: 'Deteriorating',
@@ -12,7 +12,7 @@ const REPORTS = [
     to: '/reports/q1-2026',
   },
   {
-    title: 'Q4 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q4 2025',
     scope: 'Speak Up · Policy Manager · Training',
     date: '21 December 2025',
     status: 'Stable',
@@ -20,7 +20,7 @@ const REPORTS = [
     to: null,
   },
   {
-    title: 'Q3 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q3 2025',
     scope: 'Speak Up · Policy Manager · Training',
     date: '22 September 2025',
     status: 'Stable',
@@ -28,7 +28,7 @@ const REPORTS = [
     to: null,
   },
   {
-    title: 'Q2 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q2 2025',
     scope: 'Speak Up · Policy Manager · Training',
     date: '23 June 2025',
     status: 'Improving',
@@ -36,7 +36,7 @@ const REPORTS = [
     to: null,
   },
   {
-    title: 'Q1 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q1 2025',
     scope: 'Speak Up · Policy Manager · Training',
     date: '24 March 2025',
     status: 'Stable',

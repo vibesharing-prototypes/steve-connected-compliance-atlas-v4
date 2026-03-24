@@ -55,21 +55,21 @@ const PRODUCTS = [
 
 const RECENT_REPORTS = [
   {
-    title: 'Q1 2026 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q1 2026',
     date: '19 March 2026',
     status: 'Deteriorating',
     statusColor: 'error' as const,
     to: '/reports/q1-2026',
   },
   {
-    title: 'Q4 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q4 2025',
     date: '21 December 2025',
     status: 'Stable',
     statusColor: 'success' as const,
     to: null,
   },
   {
-    title: 'Q3 2025 — Connected Compliance Report',
+    title: 'Quarterly E&C Compliance Report - Q3 2025',
     date: '22 September 2025',
     status: 'Stable',
     statusColor: 'success' as const,
