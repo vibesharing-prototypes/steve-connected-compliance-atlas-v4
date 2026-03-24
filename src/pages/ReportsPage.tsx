@@ -64,7 +64,7 @@ export default function ReportsPage() {
               {({ label, url }) => <NavLink to={url}>{label}</NavLink>}
             </OverflowBreadcrumbs>
           }
-          actions={
+          buttonArray={
             <Button variant="contained" onClick={() => navigate('/reports/q1-2026')}>
               Create report
             </Button>
