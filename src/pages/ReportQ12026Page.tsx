@@ -84,7 +84,7 @@ function ReportContent() {
           pageTitle="Q1 2026 — Connected Compliance Report"
           breadcrumbs={
             <OverflowBreadcrumbs
-              leadingElement={<span>Connected Compliance</span>}
+              leadingElement={<NavLink to="/connected-compliance">Connected Compliance</NavLink>}
               items={[
                 { id: 'compliance-reports', label: 'Reports', url: '/reports' },
                 { id: 'q1-2026', label: 'Q1 2026', url: '/reports/q1-2026' },

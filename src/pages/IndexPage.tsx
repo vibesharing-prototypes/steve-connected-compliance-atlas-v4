@@ -90,7 +90,7 @@ function ChatContent() {
                 fullWidth
                 sx={{ whiteSpace: 'nowrap' }}
               >
-                Create a compliance report
+                Connected Compliance
               </Button>
             </Stack>
           }
