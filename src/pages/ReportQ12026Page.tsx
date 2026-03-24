@@ -11,7 +11,6 @@ import {
   AIChatUserMessage,
   OverflowBreadcrumbs,
   PageHeader,
-  SectionHeader,
   StatusIndicator,
   useAIChatContext,
 } from '@diligentcorp/atlas-react-bundle';
@@ -286,7 +285,6 @@ function Flag({ children }: { children: React.ReactNode }) {
 function ReportBody() {
   return (
     <Stack gap={3}>
-      <SectionHeader title="Acme Global Ltd — Connected Compliance" subtitle="Q1 2026 · As of 19 March 2026" />
 
       <Box component="nav" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
         {[
