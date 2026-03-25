@@ -24,7 +24,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 
@@ -315,7 +315,7 @@ export default function ReportsPage() {
               ) : !isGenerating ? (
                 <>
                   <Stack gap={2.5}>
-                    <FormControl fullWidth size="small">
+                    <FormControl fullWidth size="medium">
                       <InputLabel>Report type</InputLabel>
                       <Select
                         value={selectedType}

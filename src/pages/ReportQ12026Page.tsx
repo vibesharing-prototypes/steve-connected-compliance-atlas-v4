@@ -15,7 +15,7 @@ import {
   useAIChatContext,
 } from '@diligentcorp/atlas-react-bundle';
 import { Box, Button, Chip, CircularProgress, Container, Divider, Link as MuiLink, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { NavLink, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 
 interface Message {
