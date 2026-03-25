@@ -3,6 +3,7 @@ import ComplianceEthicsIcon from '@diligentcorp/atlas-react-bundle/icons/Complia
 import HomeIcon from '@diligentcorp/atlas-react-bundle/icons/Home';
 import ReportsIcon from '@diligentcorp/atlas-react-bundle/icons/Reports';
 import SettingsIcon from '@diligentcorp/atlas-react-bundle/icons/Settings';
+import EditNoteIcon from '@diligentcorp/atlas-react-bundle/icons/EditNote';
 import TextIcon from '@diligentcorp/atlas-react-bundle/icons/Text';
 
 export default function Navigation() {
@@ -16,6 +17,9 @@ export default function Navigation() {
       </RoutedNavLink>
       <RoutedNavLink to="/reports" label="Reports">
         <ReportsIcon slot="icon" />
+      </RoutedNavLink>
+      <RoutedNavLink to="/release-notes" label="Release notes">
+        <EditNoteIcon slot="icon" />
       </RoutedNavLink>
       <RoutedNavLink to="/settings" label="Settings">
         <SettingsIcon slot="icon" />
