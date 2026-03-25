@@ -1,5 +1,5 @@
 import { OverflowBreadcrumbs, PageHeader, SectionHeader, StatusIndicator } from '@diligentcorp/atlas-react-bundle';
-import { Badge, Box, Chip, Divider, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import { Badge, Box, Button, Chip, Divider, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import { NavLink } from 'react-router';
 
 import PageLayout from '../components/PageLayout.js';
@@ -225,6 +225,44 @@ export default function StylesPage() {
           </Stack>
         </Row>
 
+      </Stack>
+
+      <Divider />
+
+      {/* Buttons */}
+      <SectionHeader title="Buttons" />
+      <Stack gap={3}>
+        <Row label='variant="contained"'>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Button variant="contained" size="small">Small</Button>
+            <Button variant="contained">Medium</Button>
+            <Button variant="contained" size="large">Large</Button>
+            <Button variant="contained" disabled>Disabled</Button>
+          </Stack>
+        </Row>
+        <Row label='variant="outlined"'>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Button variant="outlined" size="small">Small</Button>
+            <Button variant="outlined">Medium</Button>
+            <Button variant="outlined" size="large">Large</Button>
+            <Button variant="outlined" disabled>Disabled</Button>
+          </Stack>
+        </Row>
+        <Row label='variant="text"'>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Button variant="text" size="small">Small</Button>
+            <Button variant="text">Medium</Button>
+            <Button variant="text" size="large">Large</Button>
+            <Button variant="text" disabled>Disabled</Button>
+          </Stack>
+        </Row>
+        <Row label='error (via sx)'>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Button variant="contained" sx={{ bgcolor: 'error.main', '&:hover': { bgcolor: 'error.dark' } }}>Contained</Button>
+            <Button variant="outlined" sx={{ color: 'error.main', borderColor: 'error.main', '&:hover': { borderColor: 'error.dark', bgcolor: 'error.50' } }}>Outlined</Button>
+            <Button variant="text" sx={{ color: 'error.main', '&:hover': { bgcolor: 'error.50' } }}>Text</Button>
+          </Stack>
+        </Row>
       </Stack>
     </PageLayout>
   );

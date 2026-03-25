@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   AIChatAIMessage,
   AIChatBox,
@@ -14,8 +14,8 @@ import {
   StatusIndicator,
   useAIChatContext,
 } from '@diligentcorp/atlas-react-bundle';
-import { Box, Container, Divider, Link as MuiLink, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { NavLink } from 'react-router';
+import { Box, Button, Chip, CircularProgress, Container, Divider, Link as MuiLink, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { NavLink, useNavigate } from 'react-router';
 
 
 interface Message {
@@ -37,12 +37,20 @@ function nowTime() {
   return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
+const RESTRUCTURE_PROMPT = 'Break up the executive summary into shorter paragraphs for easier reading.';
+
 const INITIAL_MESSAGES: Message[] = [
   {
     id: '0',
     role: 'assistant',
     content:
       "I've generated your compliance report. This quarter's data surfaces 4 cross-domain risk signals — the most urgent being a Harassment crisis in London coinciding with critically stale conduct policies. Would you like to explore any of them?",
+    time: nowTime(),
+  },
+  {
+    id: '1',
+    role: 'user',
+    content: RESTRUCTURE_PROMPT,
     time: nowTime(),
   },
 ];
@@ -58,6 +66,57 @@ export default function ReportQ12026Page() {
 function ReportContent() {
   const { isGenerating, setIsGenerating } = useAIChatContext();
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [isRebuilding, setIsRebuilding] = useState(false);
+  const [executiveSummaryRebuilt, setExecutiveSummaryRebuilt] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNavTarget, setPendingNavTarget] = useState<string | null>(null);
+  const hasTriggeredRebuild = useRef(false);
+  const navigate = useNavigate();
+
+  // Trigger rebuild sequence on mount (simulating AI already processing the pre-seeded prompt)
+  useEffect(() => {
+    if (hasTriggeredRebuild.current) return;
+    hasTriggeredRebuild.current = true;
+
+    setIsGenerating(true);
+    setIsRebuilding(true);
+
+    setTimeout(() => {
+      setIsRebuilding(false);
+      setExecutiveSummaryRebuilt(true);
+      setHasUnsavedChanges(true);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: 'rebuild-response',
+          role: 'assistant',
+          content: "Done — I've broken the executive summary into four shorter paragraphs, each covering a distinct theme: overall posture, the London Harassment concentration, case volume surge, and the required action. The Save button is now active when you're ready to keep this version.",
+          time: nowTime(),
+        },
+      ]);
+      setIsGenerating(false);
+    }, 2800);
+  }, [setIsGenerating]);
+
+  // Block browser/tab close
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  function guardedNavigate(to: string) {
+    if (hasUnsavedChanges) {
+      setPendingNavTarget(to);
+      setShowUnsavedModal(true);
+    } else {
+      navigate(to);
+    }
+  }
 
   function handleSubmit(prompt: string) {
     setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'user', content: prompt, time: nowTime() }]);
@@ -84,7 +143,11 @@ function ReportContent() {
           pageTitle="Quarterly E&C Compliance Report - Q1 2026"
           breadcrumbs={
             <OverflowBreadcrumbs
-              leadingElement={<NavLink to="/connected-compliance">Connected Compliance</NavLink>}
+              leadingElement={
+                <a href="/connected-compliance" onClick={(e) => { e.preventDefault(); guardedNavigate('/connected-compliance'); }}>
+                  Connected Compliance
+                </a>
+              }
               items={[
                 { id: 'compliance-reports', label: 'Reports', url: '/reports' },
                 { id: 'q1-2026', label: 'Q1 2026', url: '/reports/q1-2026' },
@@ -92,29 +155,77 @@ function ReportContent() {
               hideLastItem
               aria-label="Breadcrumbs"
             >
-              {({ label, url }) => <NavLink to={url}>{label}</NavLink>}
+              {({ label, url }) => (
+                <a href={url} onClick={(e) => { e.preventDefault(); guardedNavigate(url); }}>{label}</a>
+              )}
             </OverflowBreadcrumbs>
           }
         />
 
+        {/* Metadata bar */}
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ py: 1 }}
+        >
+          <Stack direction="row" gap={3} alignItems="center">
+            {[
+              { label: 'Report type', value: 'Quarterly E&C Compliance Report' },
+              { label: 'Created', value: '19 March 2026' },
+              { label: 'Last edited', value: '19 March 2026' },
+              { label: 'Author', value: 'Sarah Chen' },
+            ].map(({ label, value }) => (
+              <Stack key={label} direction="row" gap={0.75} alignItems="baseline">
+                <Typography variant="labelXs" color="text.secondary">{label}</Typography>
+                <Typography variant="labelSm">{value}</Typography>
+              </Stack>
+            ))}
+            <Chip
+              label={hasUnsavedChanges || executiveSummaryRebuilt ? 'Configured' : 'Standard'}
+              size="small"
+              variant={hasUnsavedChanges || executiveSummaryRebuilt ? 'filled' : 'outlined'}
+              sx={hasUnsavedChanges || executiveSummaryRebuilt ? { bgcolor: 'primary.50', color: 'primary.main', fontWeight: 500 } : {}}
+            />
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <Button variant="contained" size="small" sx={{ '&&': { bgcolor: '#d32f2f', '&:hover': { bgcolor: '#b71c1c' } } }}>Delete</Button>
+            <Button
+              variant="contained"
+              size="small"
+              disabled={!hasUnsavedChanges}
+              onClick={() => setHasUnsavedChanges(false)}
+              sx={hasUnsavedChanges ? { '&&': { bgcolor: '#2e7d32', '&:hover': { bgcolor: '#1b5e20' } } } : {}}
+            >
+              Save
+            </Button>
+          </Stack>
+        </Stack>
+
+        {/* Unsaved changes modal */}
+        {showUnsavedModal && (
+          <Box
+            sx={{
+              position: 'fixed', inset: 0, zIndex: 1300,
+              bgcolor: 'rgba(0,0,0,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <Box sx={({ palette }) => ({ bgcolor: palette.background.paper, borderRadius: 2, p: 4, maxWidth: 440, width: '100%', boxShadow: 24 })}>
+              <Typography variant="h3" sx={{ mb: 1 }}>Unsaved changes</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                You have unsaved changes to this report. If you leave now, your changes will be lost.
+              </Typography>
+              <Stack direction="row" gap={1} justifyContent="flex-end">
+                <Button variant="outlined" onClick={() => { setShowUnsavedModal(false); setPendingNavTarget(null); }}>Stay on page</Button>
+                <Button variant="contained" onClick={() => { setHasUnsavedChanges(false); setShowUnsavedModal(false); if (pendingNavTarget) navigate(pendingNavTarget); }}>Leave without saving</Button>
+              </Stack>
+            </Box>
+          </Box>
+        )}
+
         {/* Two-column layout */}
         <Stack direction="row" gap={2} sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          {/* Canvas */}
-          <Box
-            sx={({ palette }) => ({
-              flex: 2,
-              minWidth: 0,
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              border: '1px solid',
-              borderColor: palette.divider,
-              borderRadius: 2,
-              p: 3,
-            })}
-          >
-            <ReportBody />
-          </Box>
-
           {/* Chat */}
           <Box
             sx={({ palette }) => ({
@@ -167,6 +278,30 @@ function ReportContent() {
                 slotProps={{ textField: { placeholder: 'What would you like to explore?' } }}
               />
             </Box>
+          </Box>
+
+          {/* Canvas */}
+          <Box
+            sx={({ palette }) => ({
+              flex: 2,
+              minWidth: 0,
+              overflowY: isRebuilding ? 'hidden' : 'auto',
+              overflowX: 'hidden',
+              border: '1px solid',
+              borderColor: palette.divider,
+              borderRadius: 2,
+              p: 3,
+              position: 'relative',
+            })}
+          >
+            {isRebuilding ? (
+              <Stack alignItems="center" justifyContent="center" gap={2} sx={{ height: '100%', minHeight: 300 }}>
+                <CircularProgress size={40} />
+                <Typography variant="textSm" color="text.secondary">Rebuilding report…</Typography>
+              </Stack>
+            ) : (
+              <ReportBody executiveSummaryRebuilt={executiveSummaryRebuilt} />
+            )}
           </Box>
         </Stack>
       </Stack>
@@ -284,7 +419,7 @@ function Flag({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ReportBody() {
+function ReportBody({ executiveSummaryRebuilt }: { executiveSummaryRebuilt?: boolean }) {
   return (
     <Stack gap={3} sx={{ '& > p': { maxWidth: '60ch' } }}>
 
@@ -305,14 +440,31 @@ function ReportBody() {
       <Divider />
 
       <Typography id="executive-summary" variant="h2">Executive Summary</Typography>
-      <Typography variant="body1">
-        Acme Global Ltd's Q1 2026 compliance programme is <strong>Deteriorating</strong>. The single most significant cross-domain risk is a Harassment crisis
-        concentrated in London: 17 Harassment cases from ~180 employees (9.4 per 100, the highest per-capita rate across all offices) coincide with 5 of 6
-        Harassment &amp; Workplace Conduct policies overdue for review, including the Global Anti-Harassment Policy (383 days overdue) and the Sexual Harassment
-        Policy (329 days overdue). Overall case volume surged 70% quarter-over-quarter from 10 cases in Q4 2025 to 17 cases in Q1 2026, the highest
-        single-quarter total in the programme's history. Immediate action is required: the combination of record case volume, a 14-case open Harassment backlog
-        with 4 cases aged beyond 180 days, and critically stale conduct policies creates direct legal and reputational exposure.
-      </Typography>
+      {executiveSummaryRebuilt ? (
+        <>
+          <Typography variant="body1">
+            Acme Global Ltd's Q1 2026 compliance programme is <strong>Deteriorating</strong>.
+          </Typography>
+          <Typography variant="body1">
+            The single most significant cross-domain risk is a Harassment crisis concentrated in London: 17 Harassment cases from ~180 employees (9.4 per 100, the highest per-capita rate across all offices) coincide with 5 of 6 Harassment &amp; Workplace Conduct policies overdue for review, including the Global Anti-Harassment Policy (383 days overdue) and the Sexual Harassment Policy (329 days overdue).
+          </Typography>
+          <Typography variant="body1">
+            Overall case volume surged 70% quarter-over-quarter from 10 cases in Q4 2025 to 17 cases in Q1 2026 — the highest single-quarter total in the programme's history.
+          </Typography>
+          <Typography variant="body1">
+            Immediate action is required: the combination of record case volume, a 14-case open Harassment backlog with 4 cases aged beyond 180 days, and critically stale conduct policies creates direct legal and reputational exposure.
+          </Typography>
+        </>
+      ) : (
+        <Typography variant="body1">
+          Acme Global Ltd's Q1 2026 compliance programme is <strong>Deteriorating</strong>. The single most significant cross-domain risk is a Harassment crisis
+          concentrated in London: 17 Harassment cases from ~180 employees (9.4 per 100, the highest per-capita rate across all offices) coincide with 5 of 6
+          Harassment &amp; Workplace Conduct policies overdue for review, including the Global Anti-Harassment Policy (383 days overdue) and the Sexual Harassment
+          Policy (329 days overdue). Overall case volume surged 70% quarter-over-quarter from 10 cases in Q4 2025 to 17 cases in Q1 2026, the highest
+          single-quarter total in the programme's history. Immediate action is required: the combination of record case volume, a 14-case open Harassment backlog
+          with 4 cases aged beyond 180 days, and critically stale conduct policies creates direct legal and reputational exposure.
+        </Typography>
+      )}
 
       <Divider />
 

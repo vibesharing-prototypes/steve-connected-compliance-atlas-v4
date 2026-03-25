@@ -1,4 +1,5 @@
 import { AppLayout } from '@diligentcorp/atlas-react-bundle';
+import { useEffect } from 'react';
 import { Outlet, Route, Routes } from 'react-router';
 import './styles.css';
 
@@ -10,16 +11,37 @@ import ReportsPage from './pages/ReportsPage.js';
 import SettingsPage from './pages/SettingsPage.js';
 import StylesPage from './pages/StylesPage.js';
 
+function AppShell() {
+  useEffect(() => {
+    // Collapse the nav on initial load by clicking the toggle button inside the web component's shadow root
+    const tryCollapse = () => {
+      const navEl = document.querySelector('mock-hb-global-navigator');
+      if (!navEl?.shadowRoot) return false;
+      const btn = navEl.shadowRoot.querySelector<HTMLElement>('button[aria-label*="collapse"], button[aria-label*="Collapse"], button[part*="toggle"], button[class*="toggle"], header button, .toggle-button, [data-testid*="toggle"]');
+      if (btn) { btn.click(); return true; }
+      return false;
+    };
+
+    // Try immediately, then retry a couple of times while the web component initialises
+    if (!tryCollapse()) {
+      const t1 = setTimeout(() => { if (!tryCollapse()) setTimeout(tryCollapse, 200); }, 100);
+      return () => clearTimeout(t1);
+    }
+  }, []);
+
+  return (
+    <AppLayout navigation={<Navigation />} orgName="Connected Compliance">
+      <Outlet />
+    </AppLayout>
+  );
+}
+
 export default function App() {
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <AppLayout navigation={<Navigation />} orgName="Connected Compliance">
-            <Outlet />
-          </AppLayout>
-        }
+        element={<AppShell />}
       >
         <Route index element={<IndexPage />} />
         <Route path="connected-compliance" element={<ComplianceReportsPage />} />
